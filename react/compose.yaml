@@ -1,8 +1,0 @@
-services: 
-  app: # container name
-    build: .
-    ports: # use Dockerfile for build
-      - "3000:3000" # host number 3000 associated with container number 3000
-    volumes:
-      - .:/app
-      - /app/node_modules
