@@ -4,7 +4,7 @@ import cors from "cors";
 import { createServer } from "http";
 
 dotenv.config();
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 const server = createServer(app);
