@@ -8,6 +8,11 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 const server = createServer(app);
+// swagger setup
+// http://<app_host>:<app_port>/api-docs
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Middleware
 app.use(cors()); // Enable cross-origin resource sharing
