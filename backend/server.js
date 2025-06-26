@@ -2,13 +2,10 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import { createServer } from "http";
-<<<<<<< Updated upstream
-=======
 import { specs, swaggerUi } from "./config/swagger.js";
 import { redis } from "./config/redis.js";
 // routes
 import uploadRoutes from "./routes/upload.js";
->>>>>>> Stashed changes
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -16,16 +13,12 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 const server = createServer(app);
 
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
 // Middleware
 app.use(cors()); // Enable cross-origin resource sharing
 app.use(express.json()); // Automatically parse incoming JSON request bodies
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs)); // Set up api endpoint for swagger ui
 
-<<<<<<< Updated upstream
-=======
 
 // -------------------------------------------------API-----------------------------------------------------------------------
 // Routes
@@ -64,7 +57,6 @@ const startServer = async () => {
     console.error('Redis connection failed');
   }
 
->>>>>>> Stashed changes
   server.listen(PORT, () => {
     console.log(`Server started at http://localhost:${PORT}`);
   });
