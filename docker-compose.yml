@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: postgres_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - app-network
+    frontend:
+      build: ./frontend
+      container_name: frontend
+      ports:
+        - "5173:5173"
+      environment:
+        - VITE_API_URL=http://localhost:3000
+      volumes:
+        - ./frontend:/app
+        - /app/node_modules
+      depends_on:
+        - backend
+      networks:
+        - app-network
+  networks:
+    app-network:
+      driver: bridge
+
+  volumes:
+    postgres_data:
