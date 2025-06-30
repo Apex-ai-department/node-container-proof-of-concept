@@ -4,6 +4,7 @@ import cors from "cors";
 import { createServer } from "http";
 import { specs, swaggerUi } from "./swagger.js";
 import { Redis } from "@upstash/redis";
+import { S3Client } from "@aws-sdk/client-s3";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
