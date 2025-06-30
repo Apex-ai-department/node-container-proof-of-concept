@@ -4,7 +4,7 @@ import cors from "cors";
 import { createServer } from "http";
 import { specs, swaggerUi } from "./swagger.js";
 import { Redis } from "@upstash/redis";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client } from "@aws-sdk/client-s3";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -12,21 +12,6 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 const server = createServer(app);
 
-// AWS S3 setup
-// const bucketName = process.env.BUCKET_NAME
-// const bucketRegion = process.env.BUCKET_REGION
-// const accessKey = process.env.ACCESS_KEY
-// const secretAccessKey = process.env.SECRET_ACCESS_KEY
-
-// const s3 = new S3Client( {
-//     credentials: {
-//         accessKeyId: accessKey,
-//         secretAccessKey: secretAccessKey,
-//     },
-//     region: bucketRegion
-// })
-
-// Redis connection setup
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_URL,
   token: process.env.UPSTASH_REDIS_TOKEN,
@@ -54,25 +39,6 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs)); // Set up api end
 app.get("/", (req, res) => {
   res.send("Backend is ready.");
 });
-
-// app.get("/api/posts", upload.single('image'), async(req, res) => {
-//     console.log("req.body", req.body)
-//     console.log("req.file", req.file)
-
-//     req.file.buffer
-//     const params = {
-//         Bucket: bucketName,
-//         Key: req.file.originalname,
-//         Body: req.file.buffer,
-//         ContentType: req.file.mimetype,
-//     }
-//     const command = new PutObjectCommand(params)
-    
-//     await s3.send(command)
-
-//     res.send({})
-// })
-
 
 // Starting the backend server
 const startServer = async () => {
