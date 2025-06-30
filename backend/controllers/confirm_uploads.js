@@ -1,4 +1,10 @@
+import crypto from "crypto";
+import dotenv from "dotenv";
 import { redis } from "../config/redis.js";
+
+dotenv.config();
+
+const bucketName = process.env.S3_BUCKET_NAME;
 
 // 🚀 NEW: Confirm uploads and queue for processing
 export async function confirmUploads(req, res) {

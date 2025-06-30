@@ -21,7 +21,7 @@ export default function Home() {
         size: file.size,
       }));
 
-      const urlResponse = await fetch("/api/upload/generate-upload-urls", {
+      const urlResponse = await fetch("/api/upload/urls", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -84,7 +84,8 @@ export default function Home() {
 
       // Step 3: Confirm uploads and trigger AI-service
       setCurrentStep("Queuing files for AI processing...");
-      const confirmResponse = await fetch("/api/confirm-uploads", {
+      
+      const confirmResponse = await fetch("/api/upload/confirm", {
         method: "POST",
         header: { "Content-Type": "application/json" },
         body: JSON.stringify({

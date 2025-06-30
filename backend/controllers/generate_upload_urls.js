@@ -4,7 +4,7 @@ import path from "path";
 import { s3Client } from "../config/s3.js";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { generateUploadUrls } from "./generateUploadUrls.js";
+// import { generateUploadUrls } from "./generateUploadUrls.js";
 dotenv.config();
 
 const bucketName = process.env.S3_BUCKET_NAME;
@@ -32,11 +32,6 @@ export async function generateUploadUrls(req, res) {
       return res.status(400).json({ error: "No files specified or invalid format" });
     }
 
-    // Validate file count (optional limit)
-    if (files.length > 50) {
-      return res.status(400).json({ error: "Too many files. Maximum 50 files allowed." });
-    }
-
     const uploadUrls = [];
 
     for (const file of files) {
@@ -45,18 +40,12 @@ export async function generateUploadUrls(req, res) {
         return res.status(400).json({ error: "Each file must have name, type, and size" });
       }
 
-      // Optional: Validate file type
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-      if (!allowedTypes.includes(file.type)) {
-        return res.status(400).json({ error: `File type ${file.type} not allowed` });
-      }
-
       // Optional: Validate file size (10MB max per file)
-      if (file.size > 10 * 1024 * 1024) {
-        return res.status(400).json({ error: `File ${file.name} is too large. Maximum 10MB per file.` });
-      }
+      // if (file.size > 10 * 1024 * 1024) {
+      //   return res.status(400).json({ error: `File ${file.name} is too large. Maximum 10MB per file.` });
+      // }
 
-      // Generate unique filename
+      // Generate unique filename to prevent overwritten in S3
       const fileName = generateFileName(file.name);
       const s3Key = `uploads/${batchId}/${fileName}`;
 
@@ -97,7 +86,6 @@ export async function generateUploadUrls(req, res) {
     console.error("Error generating upload URLs:", error);
     res.status(500).json({
       error: "Failed to generate upload URLs",
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 }

@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { createServer } from "http";
 import { specs, swaggerUi } from "./swagger.js";
-import { Redis } from "@upstash/redis";
+import { redis } from "./config/redis.js";
 import uploadRoutes from "./routes/upload.js";
 import invoiceRoutes from "./routes/invoices.js";
 
@@ -12,11 +12,6 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 const server = createServer(app);
-
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_URL,
-  token: process.env.UPSTASH_REDIS_TOKEN,
-});
 
 // Middleware
 app.use(cors()); // Enable cross-origin resource sharing

@@ -1,0 +1,97 @@
+# Node.js Project .gitignore Template
+# Copy this to your project root and customize as needed
+
+# ===== DEPENDENCIES =====
+node_modules/
+*/node_modules/
+.pnp
+.pnp.js
+
+# ===== ENVIRONMENT VARIABLES =====
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ===== BUILD OUTPUTS =====
+dist/
+build/
+*/dist/
+*/build/
+dist-ssr/
+*.local
+
+# ===== LOGS =====
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ===== RUNTIME DATA =====
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# ===== COVERAGE =====
+coverage/
+*.lcov
+.nyc_output
+
+# ===== CACHE =====
+.npm
+.eslintcache
+.cache
+.parcel-cache
+.vite/
+
+# ===== EDITOR FILES =====
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ===== OS FILES =====
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ===== DATABASE =====
+*.db
+*.sqlite
+*.sqlite3
+
+# ===== UPLOADS =====
+uploads/
+public/uploads/
+temp/uploads/
+
+# ===== DOCKER =====
+.dockerignore
+
+# ===== LOCK FILES =====
+# Keep package-lock.json, ignore others
+yarn.lock
+pnpm-lock.yaml
+
+# ===== TEMPORARY FILES =====
+tmp/
+temp/
+*.bak
+*.backup
+*.old
+
+# ===== PROJECT SPECIFIC =====
+# Add your project-specific ignores here 
