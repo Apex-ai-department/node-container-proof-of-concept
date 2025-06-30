@@ -4,8 +4,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const redis = new Redis({
-    url: process.env.UPSTASH_REDIS_URL,
-    token: process.env.UPSTASH_REDIS_TOKEN,
-  });
+  url: process.env.UPSTASH_REDIS_URL,
+  token: process.env.UPSTASH_REDIS_TOKEN,
+});
 
-  export { redis };
+export { redis };

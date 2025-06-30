@@ -39,15 +39,12 @@ app.use("/api/upload", uploadRoutes);
  *            schema:
  *              type: string
  */
->>>>>>> Stashed changes
 app.get("/", (req, res) => {
   res.send("Backend is ready.");
 });
 
 // Starting the backend server
 const startServer = async () => {
-<<<<<<< Updated upstream
-=======
   // Test redis connection
   try {
     await redis.set('connection_test', 'Redis connection successful!');
