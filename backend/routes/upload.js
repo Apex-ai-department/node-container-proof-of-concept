@@ -5,6 +5,6 @@ import { upload } from "../config/multer.js";
 const router = express.Router();
 
 // Prefix: /api/upload
-router.post("/", upload.array('files', 200), handleUpload);
+router.post("/", upload.array("file", 200), handleUpload);
 
 export default router;

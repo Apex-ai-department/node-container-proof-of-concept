@@ -4,6 +4,8 @@ import cors from "cors";
 import { createServer } from "http";
 import { specs, swaggerUi } from "./swagger.js";
 import { Redis } from "@upstash/redis";
+import uploadRoutes from "./routes/upload.js";
+import invoiceRoutes from "./routes/invoices.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +22,10 @@ const redis = new Redis({
 app.use(cors()); // Enable cross-origin resource sharing
 app.use(express.json()); // Automatically parse incoming JSON request bodies
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs)); // Set up api endpoint for swagger ui
+
+// Routes
+app.use("/api/upload", uploadRoutes);
+app.use("/api/invoices", invoiceRoutes);
 
 /**
  * @swagger

@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.neu-container {
+  background: #e0e5ec;
+  border-radius: 24px;
+  box-shadow:  8px 8px 24px #b8bac0, -8px -8px 24px #ffffff;
+  padding: 32px;
+}
+
+.neu-panel {
+  background: #e0e5ec;
+  border-radius: 24px;
+  box-shadow:  8px 8px 24px #b8bac0, -8px -8px 24px #ffffff;
+  padding: 24px;
+}
+
+.neu-btn {
+  background: #e0e5ec;
+  border-radius: 16px;
+  box-shadow:  4px 4px 12px #b8bac0, -4px -4px 12px #ffffff;
+  border: none;
+  color: #1675e0;
+  font-weight: 600;
+  padding: 10px 28px;
+  transition: box-shadow 0.2s;
+}
+.neu-btn:active {
+  box-shadow: inset 2px 2px 8px #b8bac0, inset -2px -2px 8px #ffffff;
+}
