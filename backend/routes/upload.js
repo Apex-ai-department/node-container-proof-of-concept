@@ -1,6 +1,6 @@
 import express from "express";
-import { handleUpload } from "../controllers/uploadController.js";
 import { upload } from "../config/multer.js";
+import { generateUploadUrls } from "../controllers/generate_upload_urls.js";
 
 const router = express.Router();
 
