@@ -1,3 +1,5 @@
+import multer from "multer";
+
 // Configure multer
 const allowedMimeTypes = [
   "application/pdf",

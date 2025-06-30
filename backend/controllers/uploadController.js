@@ -21,18 +21,21 @@ const generateFileName = (originalName, bytes = 32) => {
 };
 
 export async function handleUpload(req, res) {
+    // Check if the API call is a POST method
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
+    // Check if there's file upload
     if (!req.file) {
       return res.status(400).json({
         error: "No file uploaded!",
       });
     }
 
-    const fileName = generateFileName(req.file.oroginalname);
+    // Generate unique file name for 
+    const fileName = generateFileName(req.file.originalName);
     const params = {
       Bucket: bucketName,
       Key: fileName,
