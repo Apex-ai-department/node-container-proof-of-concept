@@ -2,6 +2,42 @@ version: "3.8"
 
 services:
 
+
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - REDIS_URL=redis://redis:7379
+      - DATABASE_URL=postgresql://postgres_user:postgres_password@postgres:5432/postgres_db
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+      - S3_BUCKET_REGION=${S3_BUCKET_REGION}
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY}
+      - S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY}
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - app-network
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - app-network  
   postgres:
     image: postgres:15
     container_name: postgres
@@ -14,35 +50,19 @@ services:
       POSTGRES_DB: postgres_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
-  backend:
-    build: ./backend
-    container_name: backend
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=development
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
     networks:
       - app-network
-    frontend:
-      build: ./frontend
-      container_name: frontend
-      ports:
-        - "5173:5173"
-      environment:
-        - VITE_API_URL=http://localhost:3000
-      volumes:
-        - ./frontend:/app
-        - /app/node_modules
-      depends_on:
-        - backend
-      networks:
-        - app-network
-  networks:
-    app-network:
-      driver: bridge
+  redis:
+    image: redis:7-alpine
+    container_name: redis_queue
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge
 
-  volumes:
-    postgres_data:
+volumes:
+  postgres_data:
