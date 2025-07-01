@@ -34,7 +34,7 @@ const mockInvoices = [
 //     next();
 // })
 
-router.post("/results", saveAIResults);
+//router.post("/results", saveAIResults);
 
 // GET /api/invoices
 router.get("/", (req, res) => {

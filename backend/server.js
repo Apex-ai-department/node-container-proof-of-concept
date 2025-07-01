@@ -5,7 +5,7 @@ import { createServer } from "http";
 import { specs, swaggerUi } from "./swagger.js";
 import { redis } from "./config/redis.js";
 import uploadRoutes from "./routes/upload.js";
-import { invoiceRoutes, aiResultsRoutes } from "./routes/invoices.js";
+import invoiceRoutes from "./routes/invoices.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -17,11 +17,11 @@ const server = createServer(app);
 app.use(cors()); // Enable cross-origin resource sharing
 app.use(express.json()); // Automatically parse incoming JSON request bodies
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs)); // Set up api endpoint for swagger ui
-app.use("/api/ai", aiResultsRoutes);
 
 // Routes
 app.use("/api/upload", uploadRoutes);
 app.use("/api/invoices", invoiceRoutes);
+//app.use("/api/ai", aiResultsRoutes);
 
 /**
  * @swagger
