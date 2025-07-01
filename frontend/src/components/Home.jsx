@@ -87,7 +87,7 @@ export default function Home() {
       
       const confirmResponse = await fetch("/api/upload/confirm", {
         method: "POST",
-        header: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           batchId: batchId,
           uploadedFiles: uploadResults,

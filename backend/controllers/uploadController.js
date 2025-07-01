@@ -59,6 +59,17 @@ export async function handleUpload(req, res) {
       { expiresIn: 3600 } // 60 seconds
     );
 
+    const uploadUrl = await getSignedUrl(
+        s3Client,
+        new PutObjectCommand({
+            Bucket: bucketName,
+            Key: s3Key,
+            ContentType: file.type,
+            ContentLength: file.size,
+        }),
+        { expiresIn: 900 }
+    )
+
     res.status(200).json({
       success: true,
       fileName: fileName,
