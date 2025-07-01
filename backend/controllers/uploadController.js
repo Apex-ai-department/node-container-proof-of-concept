@@ -4,6 +4,7 @@ import path from "path";
 import { s3Client } from "../config/s3.js";
 import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import sharp from "sharp";
 
 dotenv.config();
 
@@ -34,14 +35,21 @@ export async function handleUpload(req, res) {
       });
     }
 
+    // Preprocessing w/ grayscale and binarization before sending to S3
+    const preprocessedImageBuffer = await sharp(req.file.buffer)
+        .grayscale()
+        .threshold(128)
+        .jpeg({ quality: 80 })
+        .toBuffer();
+
     // Generate unique file name for 
     const fileName = generateFileName(req.file.originalName);
     const params = {
       Bucket: bucketName,
       Key: fileName,
-      Body: req.file.buffer,
-      ContentType: req.file.mimetype,
-      ContentLength: req.file.size,
+      Body: preprocessedImageBuffer,
+      ContentType: "image/jpeg",
+      ContentLength: preprocessedImageBuffer.length,
     };
 
     // Send the upload to S3
@@ -59,16 +67,16 @@ export async function handleUpload(req, res) {
       { expiresIn: 3600 } // 60 seconds
     );
 
-    const uploadUrl = await getSignedUrl(
-        s3Client,
-        new PutObjectCommand({
-            Bucket: bucketName,
-            Key: s3Key,
-            ContentType: file.type,
-            ContentLength: file.size,
-        }),
-        { expiresIn: 900 }
-    )
+    // const uploadUrl = await getSignedUrl(
+    //     s3Client,
+    //     new PutObjectCommand({
+    //         Bucket: bucketName,
+    //         Key: s3Key,
+    //         ContentType: file.type,
+    //         ContentLength: file.size,
+    //     }),
+    //     { expiresIn: 900 }
+    // )
 
     res.status(200).json({
       success: true,
