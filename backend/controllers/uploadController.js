@@ -22,7 +22,7 @@ const generateFileName = (originalname, bytes = 32) => {
 };
 
 export async function handleUpload(req, res) {
-    // Check if the API call is a POST method
+  // Check if the API call is a POST method
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -42,21 +42,21 @@ export async function handleUpload(req, res) {
     const metadata = await image.metadata();
 
     if (metadata.width > MAX_WIDTH || metadata.height > MAX_HEIGHT) {
-        image.resize({
-            width: MAX_WIDTH,
-            height: MAX_HEIGHT,
-            fit: "inside",
-            withoutEnlargement: true,
-        });
+      image.resize({
+        width: MAX_WIDTH,
+        height: MAX_HEIGHT,
+        fit: "inside",
+        withoutEnlargement: true,
+      });
     }
 
     const preprocessedImageBuffer = await image
-        .grayscale()
-        .threshold(128)
-        .jpeg({ quality: 80 })
-        .toBuffer();
+      .grayscale()
+      .threshold(128)
+      .jpeg({ quality: 80 })
+      .toBuffer();
 
-    // Generate unique file name for 
+    // Generate unique file name for
     const fileName = generateFileName(req.file.originalname);
     const params = {
       Bucket: bucketName,
@@ -112,4 +112,3 @@ export async function handleUpload(req, res) {
     });
   }
 }
-

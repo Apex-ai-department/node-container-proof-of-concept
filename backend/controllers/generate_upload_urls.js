@@ -25,11 +25,14 @@ export async function generateUploadUrls(req, res) {
   }
 
   try {
-    const { files, batchId = crypto.randomBytes(16).toString('hex') } = req.body;
-    
+    const { files, batchId = crypto.randomBytes(16).toString("hex") } =
+      req.body;
+
     // Expect files array like: [{ name: "photo.jpg", type: "image/jpeg", size: 1024000 }]
     if (!files || !Array.isArray(files) || files.length === 0) {
-      return res.status(400).json({ error: "No files specified or invalid format" });
+      return res
+        .status(400)
+        .json({ error: "No files specified or invalid format" });
     }
 
     const uploadUrls = [];
@@ -37,7 +40,9 @@ export async function generateUploadUrls(req, res) {
     for (const file of files) {
       // Validate file info
       if (!file.name || !file.type || !file.size) {
-        return res.status(400).json({ error: "Each file must have name, type, and size" });
+        return res
+          .status(400)
+          .json({ error: "Each file must have name, type, and size" });
       }
 
       // Optional: Validate file size (10MB max per file)
@@ -58,7 +63,7 @@ export async function generateUploadUrls(req, res) {
           ContentType: file.type,
           ContentLength: file.size,
         }),
-        { 
+        {
           expiresIn: 900, // 15 minutes to complete upload
         }
       );
@@ -81,7 +86,6 @@ export async function generateUploadUrls(req, res) {
       totalFiles: files.length,
       message: `Generated upload URLs for ${files.length} files`,
     });
-
   } catch (error) {
     console.error("Error generating upload URLs:", error);
     res.status(500).json({

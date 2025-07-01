@@ -134,7 +134,7 @@ export default function Home() {
 
       // Step 3: Confirm uploads and trigger AI-service
       setCurrentStep("Queuing files for AI processing...");
-      
+
       const confirmResponse = await fetch("/api/upload/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -181,9 +181,6 @@ export default function Home() {
       setCurrentStep("");
     }
   };
-
-
-  
 
   return (
     <div className="min-h-screen bg-[#fff8f7] flex items-center justify-center">
@@ -249,11 +246,12 @@ export default function Home() {
               "Upload and Extract"
             )}
           </button>
+          <p>{currentStep}</p>
         </form>
         {result && (
           <div className="mt-10">
             <h2 className="text-2xl font-semibold mb-3 text-red-600">
-              Extracted Data
+              Upload log
             </h2>
             <pre className="bg-red-50 border border-red-100 rounded-xl p-5 text-base overflow-x-auto">
               {JSON.stringify(result, null, 2)}
