@@ -15,8 +15,8 @@ if (!bucketName) {
   throw new Error("S3_BUCKET_NAME environment variable is required.");
 }
 
-const generateFileName = (originalName, bytes = 32) => {
-  const extension = path.extname(originalName);
+const generateFileName = (originalname, bytes = 32) => {
+  const extension = path.extname(originalname);
   const randomName = crypto.randomBytes(bytes).toString("hex");
   return `${randomName}${extension}`;
 };
@@ -43,7 +43,7 @@ export async function handleUpload(req, res) {
         .toBuffer();
 
     // Generate unique file name for 
-    const fileName = generateFileName(req.file.originalName);
+    const fileName = generateFileName(req.file.originalname);
     const params = {
       Bucket: bucketName,
       Key: fileName,
