@@ -1,5 +1,50 @@
 import { useState } from "react";
 
+async function preprocessImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+          const avg = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+          const threshold = 128;
+          const binarized = avg > threshold ? 255 : 0;
+          data[i] = data[i + 1] = data[i + 2] = binarized;
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const processedFile = new File([blob], file.name, {
+              type: "image/jpeg",
+            });
+            resolve(processedFile);
+          } else {
+            reject("Failed to convert canvas to blob");
+          }
+        }, "image/jpeg", 0.8);
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function Home() {
   const [files, setFiles] = useState([]);
   const [uploaderName, setUploaderName] = useState("");
@@ -13,13 +58,18 @@ export default function Home() {
     setResult(null);
 
     try {
-      // Step 1: Generate pre-signed URLs
-      setCurrentStep("Getting upload URLs...");
-      const fileInfos = Array.from(files).map((file) => ({
-        name: file.name,
-        type: file.type,
-        size: file.size,
-      }));
+        // Step 1: Generate pre-signed URLs
+        setCurrentStep("Getting upload URLs...");
+        const processedFiles = await Promise.all(
+            Array.from(files).map((file) => preprocessImage(file))
+        );
+
+        const fileInfos = processedFiles.map((file) => ({
+            name: file.name,
+            type: file.type,
+            size: file.size,
+        }));
+
 
       const urlResponse = await fetch("/api/upload/urls", {
         method: "POST",
@@ -40,7 +90,7 @@ export default function Home() {
       // Step 2: Upload files directly to S3 in parallel
       setCurrentStep("Uploading files to cloud storage...");
       const uploadPromises = uploadUrls.map(async (url, index) => {
-        const file = files[index];
+        const file = processedFiles[index];
 
         try {
           // Fetching from AWS S3 directly
