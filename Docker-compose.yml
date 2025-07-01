@@ -24,20 +24,20 @@ services:
     networks:
       - app-network
       
-    frontend:
-      build: ./frontend
-      container_name: frontend
-      ports:
-        - "5173:5173"
-      environment:
-        - VITE_API_URL=http://localhost:3000
-      volumes:
-        - ./frontend:/app
-        - /app/node_modules
-      depends_on:
-        - backend
-      networks:
-        - app-network
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - app-network
   postgres:
     image: postgres:15
     container_name: postgres
