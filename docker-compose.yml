@@ -8,7 +8,8 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
-      - REDIS_URL=redis://redis:6379
+      - UPSTASH_REDIS_URL=${UPSTASH_REDIS_URL}
+      - UPSTASH_REDIS_TOKEN=${UPSTASH_REDIS_TOKEN}
       - DATABASE_URL=postgresql://postgres_user:postgres_password@postgres:5432/postgres_db
       - S3_BUCKET_NAME=${S3_BUCKET_NAME}
       - S3_BUCKET_REGION=${S3_BUCKET_REGION}

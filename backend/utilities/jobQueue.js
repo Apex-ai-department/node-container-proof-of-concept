@@ -10,7 +10,7 @@ export class JobQueue {
     // Add job to queue
     async addJob(s3url) {
         // Create job id
-        const jobId = `job_${Date.now()}_${uuid()}`;
+        const jobId = `job_${Date.now()}_${uuidv4()}`;
     
         // Store job metadata into queue
         await redis.hset(`job:${jobId}`, {
