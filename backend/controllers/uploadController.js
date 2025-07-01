@@ -36,7 +36,21 @@ export async function handleUpload(req, res) {
     }
 
     // Preprocessing w/ grayscale and binarization before sending to S3
-    const preprocessedImageBuffer = await sharp(req.file.buffer)
+    const MAX_WIDTH = 2000;
+    const MAX_HEIGHT = 2000;
+    const image = sharp(req.file.buffer);
+    const metadata = await image.metadata();
+
+    if (metadata.width > MAX_WIDTH || metadata.height > MAX_HEIGHT) {
+        image.resize({
+            width: MAX_WIDTH,
+            height: MAX_HEIGHT,
+            fit: "inside",
+            withoutEnlargement: true,
+        });
+    }
+
+    const preprocessedImageBuffer = await image
         .grayscale()
         .threshold(128)
         .jpeg({ quality: 80 })
