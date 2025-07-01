@@ -6,7 +6,7 @@ import { specs, swaggerUi } from "./swagger.js";
 import { redis } from "./config/redis.js";
 import uploadRoutes from "./routes/upload.js";
 import invoiceRoutes from "./routes/invoices.js";
-import aiResultsRoutes from "./routes/aiResults.js"
+import aiResultsRoutes from "./routes/aiResults.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
