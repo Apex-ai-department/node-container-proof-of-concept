@@ -2,8 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "rsuite/dist/rsuite-no-reset.min.css";
 import "./global.css";
 import Navigation from "./components/Navigation";
-import Home from "./components/Home";
-import InvoicesPage from "./components/Invoices";
+import Home from "./pages/Home";
+import InvoicesPage from "./pages/Invoices";
 
 function App() {
   return (
