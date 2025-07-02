@@ -25,7 +25,7 @@ export default function InvoicesPage() {
   const [uniqueUsers, setUniqueUsers] = useState([]);
 
   useEffect(() => {
-    fetch("/api/invoices")
+    fetch("/api/db")
       .then((res) => res.json())
       .then((data) => {
         // Debug: check for <a> in any field

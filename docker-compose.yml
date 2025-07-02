@@ -55,3 +55,5 @@ volumes:
   postgres_data:
   backend_node_modules:
   frontend_node_modules:
+  app:
+  test:
