@@ -7,6 +7,7 @@ import { redis } from "./config/redis.js";
 import { pool } from "./config/postgres.js";
 import uploadRoutes from "./routes/upload.js";
 import invoiceRoutes from "./routes/invoices.js";
+import aiResultsRoutes from "./routes/ai.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -22,6 +23,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs)); // Set up api end
 // Routes
 app.use("/api/upload", uploadRoutes);
 app.use("/api/invoices", invoiceRoutes);
+app.use("/api/ai", aiResultsRoutes);
 //app.use("/api/ai", aiResultsRoutes);
 
 /**
