@@ -54,3 +54,27 @@ export async function saveJobAndResults(req, res) {
     res.status(500).json({ error: "Failed to save job and results" });
   }
 }
+
+export async function getJobAndResultsByJobId(req, res) {
+  const jobId = req.params.jobId;
+
+  if (!jobId) {
+    return res.status(400).json({ error: "Missing jobId parameter" });
+  }
+
+  try {
+    const jobResult = await pool.query('SELECT * FROM jobs WHERE job_id = $1', [jobId]);
+    if (jobResult.rowCount === 0) {
+      return res.status(404).json({ error: "Job not found" });
+    }
+    const job = jobResult.rows[0];
+
+    const resultsResult = await pool.query('SELECT * FROM ai_results WHERE job_id = $1', [jobId]);
+    const results = resultsResult.rows;
+
+    res.json({ job, results });
+  } catch (err) {
+    console.error("Error retrieving job/results:", err);
+    res.status(500).json({ error: "Failed to retrieve job and results" });
+  }
+}
