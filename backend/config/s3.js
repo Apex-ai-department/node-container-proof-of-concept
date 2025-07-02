@@ -8,12 +8,11 @@ const accessKeyId = process.env.S3_ACCESS_KEY;
 const secretAccessKey = process.env.S3_SECRET_ACCESS_KEY;
 
 const s3Client = new S3Client({
-    region,
-    credentials: {
-        accessKeyId,
-        secretAccessKey
-    }
-})
+  region,
+  credentials: {
+    accessKeyId,
+    secretAccessKey,
+  },
+});
 
 export { s3Client };
-

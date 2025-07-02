@@ -4,6 +4,7 @@ import cors from "cors";
 import { createServer } from "http";
 import { specs, swaggerUi } from "./swagger.js";
 import { redis } from "./config/redis.js";
+import { pool } from "./config/postgres.js";
 import uploadRoutes from "./routes/upload.js";
 import invoiceRoutes from "./routes/invoices.js";
 
@@ -50,6 +51,19 @@ const startServer = async () => {
     console.log(testValue);
   } catch (error) {
     console.error("Redis connection failed");
+  }
+
+  // Test database connection
+  try {
+    const client = await pool.connect();
+    const result = await client.query("SELECT NOW()");
+    console.log("Postgre Database connection successful!", result.rows[0]);
+    client.release();
+  } catch (error) {
+    console.error("Postgre Database connection failed:", error.message);
+    console.log(
+      "Note: Make sure Docker is running and PostgreSQL container is started"
+    );
   }
 
   server.listen(PORT, () => {

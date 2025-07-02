@@ -54,7 +54,7 @@ export async function confirmUploads(req, res) {
       })),
       metadata: metadata, // Any additional data you want to pass
       createdAt: new Date().toISOString(),
-      status: "pending",
+      status: "processing",
     };
 
     // Push to Redis queue for processing
