@@ -24,7 +24,6 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs)); // Set up api end
 app.use("/api/upload", uploadRoutes);
 app.use("/api/invoices", invoiceRoutes);
 app.use("/api/db", resultsRoutes);
-//app.use("/api/ai", aiResultsRoutes);
 
 /**
  * @swagger
