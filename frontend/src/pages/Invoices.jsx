@@ -99,7 +99,7 @@ export default function InvoicesPage() {
     <Panel
       bordered
       shaded
-      style={{ maxWidth: 1200, margin: "40px auto", background: "#fff" }}
+      style={{ maxWidth: 1625, margin: "40px auto", background: "#fff" }}
     >
       <Stack
         spacing={16}
@@ -175,7 +175,7 @@ export default function InvoicesPage() {
             )}
           </Cell>
         </Column>
-        <Column width={300} align="center" fixed>
+        <Column width={350} resizable>
           <HeaderCell>ID</HeaderCell>
           <Cell dataKey="id" />
         </Column>
@@ -195,7 +195,7 @@ export default function InvoicesPage() {
           <HeaderCell>Uploader</HeaderCell>
           <Cell dataKey="uploader_name" />
         </Column>
-        <Column width={240} flexGrow={1}>
+        <Column width={100} resizable>
           <HeaderCell>OCR Text</HeaderCell>
           <Cell>
             {(rowData) => (
