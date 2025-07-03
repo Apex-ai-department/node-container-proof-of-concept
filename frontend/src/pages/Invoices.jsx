@@ -175,7 +175,7 @@ export default function InvoicesPage() {
             )}
           </Cell>
         </Column>
-        <Column width={60} align="center" fixed>
+        <Column width={300} align="center" fixed>
           <HeaderCell>ID</HeaderCell>
           <Cell dataKey="id" />
         </Column>
