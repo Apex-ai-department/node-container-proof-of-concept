@@ -51,7 +51,10 @@ export async function saveJobAndResults(req, res) {
       INSERT INTO ai_results (
         job_id, company_name, price, date, uploader_name, raw_ocr, created_at
       ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING id
     `;
+
+    const insertedIds = []; // store inserted/unique ids
 
     for (const result of results) {
       await pool.query(insertResultQuery, [
@@ -64,6 +67,8 @@ export async function saveJobAndResults(req, res) {
         result.created_at || new Date().toISOString(),
       ]);
     }
+
+    insertedIds.push(rows[0].id);
 
     res.status(200).json({ success: true, message: "Job, files, and results saved" });
   } catch (err) {
