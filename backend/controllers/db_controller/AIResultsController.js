@@ -1,49 +1,12 @@
 // controllers/jobAndResultsController.js
-import { pool } from "../config/postgres.js";
+import { pool } from "../../config/postgres.js";
 
-export async function saveJobAndResults(req, res) {
+export async function saveInvoiceResults(req, res) {
   try {
-    const { job, results } = req.body;
+    const results = req.body;
 
-    if (!job?.jobId || !Array.isArray(results)) {
+    if (!Array.isArray(results)) {
       return res.status(400).json({ error: "Missing job or results" });
-    }
-
-    // Insert or update job
-    const insertJobQuery = `
-      INSERT INTO jobs (job_id, batch_id, type, metadata, created_at, status)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      ON CONFLICT (job_id) DO UPDATE
-      SET metadata = EXCLUDED.metadata,
-          status = EXCLUDED.status,
-          created_at = EXCLUDED.created_at
-    `;
-
-    await pool.query(insertJobQuery, [
-      job.jobId,
-      job.batchId,
-      job.type,
-      JSON.stringify(job.metadata || {}),
-      job.createdAt || new Date().toISOString(),
-      job.status || "pending",
-    ]);
-
-    // Insert job files if present
-    if (Array.isArray(job.files)) {
-      const insertFileQuery = `
-        INSERT INTO job_files (job_id, s3_key, s3_url, original_name, created_at)
-        VALUES ($1, $2, $3, $4, $5)
-        ON CONFLICT DO NOTHING
-      `;
-      for (const file of job.files) {
-        await pool.query(insertFileQuery, [
-          job.jobId,
-          file.s3Key,
-          file.s3Url,
-          file.originalName,
-          new Date().toISOString(),
-        ]);
-      }
     }
 
     // Insert AI results linked to job
@@ -53,8 +16,6 @@ export async function saveJobAndResults(req, res) {
       ) VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING id
     `;
-
-    const insertedIds = []; // store inserted/unique ids
 
     for (const result of results) {
       await pool.query(insertResultQuery, [
@@ -68,17 +29,16 @@ export async function saveJobAndResults(req, res) {
       ]);
     }
 
-    insertedIds.push(rows[0].id);
-
-    res.status(200).json({ success: true, message: "Job, files, and results saved" });
+    res
+      .status(200)
+      .json({ success: true, message: "Job, files, and results saved" });
   } catch (err) {
     console.error("Error saving job/files/results:", err);
     res.status(500).json({ error: "Failed to save job, files, and results" });
   }
 }
 
-
-export async function getJobAndResultsByJobId(req, res) {
+export async function getInvoiceResults(req, res) {
   const jobId = req.params.jobId;
 
   if (!jobId) {
@@ -86,13 +46,14 @@ export async function getJobAndResultsByJobId(req, res) {
   }
 
   try {
+    // Optimized query using LEFT JOIN instead of subquery
     const query = `
       SELECT
-        row_to_json(j) AS job,
-        (SELECT json_agg(row_to_json(f)) FROM job_files f WHERE f.job_id = j.job_id) AS files,
-        (SELECT json_agg(row_to_json(r)) FROM ai_results r WHERE r.job_id = j.job_id) AS results
+        COALESCE(json_agg(r.*) FILTER (WHERE r.id IS NOT NULL), '[]'::json) AS results
       FROM jobs j
-      WHERE j.job_id = $1
+      LEFT JOIN ai_results r ON r.job_id = j.job_id OR r.job_id = j."jobId"
+      WHERE j.job_id = $1 OR j."jobId" = $1
+      GROUP BY j.job_id, j."jobId"
       LIMIT 1;
     `;
 
@@ -104,11 +65,10 @@ export async function getJobAndResultsByJobId(req, res) {
 
     res.json(rows[0]);
   } catch (err) {
-    console.error("Error retrieving job with related data:", err);
-    res.status(500).json({ error: "Failed to retrieve job and related data" });
+    console.error("Error retrieving invoice results:", err);
+    res.status(500).json({ error: "Failed to retrieve invoice results" });
   }
 }
-
 
 // export async function getJobAndResultsByJobId(req, res) {
 //   const jobId = req.params.jobId;

@@ -1,5 +1,4 @@
 import express from "express";
-import { saveJobAndResults } from "../controllers/jobAndResultsController.js";
 
 const router = express.Router();
 
@@ -24,8 +23,6 @@ const mockInvoices = [
     created_at: "2024-01-16T14:20:00Z",
   },
 ];
-
-router.post("/results", saveJobAndResults);
 
 // GET /api/invoices
 router.get("/", (req, res) => {

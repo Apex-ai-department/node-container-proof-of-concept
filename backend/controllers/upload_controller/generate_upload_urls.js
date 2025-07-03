@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import crypto from "crypto";
 import path from "path";
-import { s3Client } from "../config/s3.js";
+import { s3Client } from "../../config/s3.js";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 // import { generateUploadUrls } from "./generateUploadUrls.js";

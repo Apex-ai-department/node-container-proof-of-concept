@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import dotenv from "dotenv";
-import { redis } from "../config/redis.js";
+import { redis } from "../../config/redis.js";
+import { pool } from "../../config/postgres.js";
 
 dotenv.config();
 
@@ -64,13 +65,21 @@ export async function confirmUploads(req, res) {
       `📤 Queued job ${processingJob.jobId} with ${successfulUploads.length} files for processing`
     );
 
-    // TODO: Optionally save batch info to database here
-    // await db.batches.create({
-    //   batchId,
-    //   jobId: processingJob.jobId,
-    //   fileCount: successfulUploads.length,
-    //   status: 'queued'
-    // });
+    // Storing job to postgre database
+    // Store the entire job object as JSON in a single table
+    const insertJobQuery = `
+      INSERT INTO jobs (job_id, job_data, created_at)
+      VALUES ($1, $2, $3)
+      ON CONFLICT (job_id) DO UPDATE
+      SET job_data = EXCLUDED.job_data,
+          created_at = EXCLUDED.created_at
+    `;
+
+    await pool.query(insertJobQuery, [
+      processingJob.jobId,
+      JSON.stringify(processingJob), // Store the entire job object
+      processingJob.createdAt || new Date().toISOString(),
+    ]);
 
     res.status(200).json({
       success: true,
