@@ -8,6 +8,7 @@ import { pool } from "./config/postgres.js";
 import uploadRoutes from "./routes/upload.js";
 import invoiceRoutes from "./routes/invoices.js";
 import resultsRoutes from "./routes/db.js";
+import queueRoutes from "./routes/queue.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -24,6 +25,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs)); // Set up api end
 app.use("/api/upload", uploadRoutes);
 app.use("/api/invoices", invoiceRoutes);
 app.use("/api/db", resultsRoutes);
+app.use('/api/queue', queueRoutes);
 
 /**
  * @swagger

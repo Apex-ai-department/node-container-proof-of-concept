@@ -3,7 +3,7 @@ import "rsuite/dist/rsuite-no-reset.min.css";
 import "./global.css";
 import Navigation from "./components/Navigation";
 import Home from "./pages/Home";
-import InvoicesPage from "./pages/Invoices";
+import DashboardPage from "./pages/Dashboard";
 
 function App() {
   return (
@@ -12,7 +12,7 @@ function App() {
         <Navigation />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/invoices" element={<InvoicesPage />} />
+          <Route path="/invoices" element={<DashboardPage />} />
         </Routes>
       </div>
     </Router>
