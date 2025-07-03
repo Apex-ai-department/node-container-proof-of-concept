@@ -106,7 +106,7 @@ export async function updateJob(req, res) {
     const updateQuery = `
         UPDATE jobs
         SET job_data = $1,
-            created_at = $2,
+            created_at = $2
         WHERE job_id = $3
         RETURNING job_id, job_data, created_at;
       `;
