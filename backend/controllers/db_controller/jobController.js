@@ -63,6 +63,23 @@ export async function getJob(req, res) {
   }
 }
 
+export async function getAllJobs(req, res) {
+  try {
+    const query = `
+      SELECT
+        job_data AS job
+      FROM jobs;
+    `;
+
+    const { rows } = await pool.query(query);
+
+    res.json(rows);
+  } catch (error) {
+    console.error("Error retrieving all jobs: ", error);
+    res.status(500).json({ error: "Failed to retrieve all jobs." });
+  }
+}
+
 export async function updateJob(req, res) {
   const jobId = req.params.jobId;
   const updateData = req.body;
