@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { preprocessImage } from "../components/preprocessImage.js";
 
 export default function Home() {
   const [files, setFiles] = useState([]);
   const [preprocessedFiles, setPreprocessedFiles] = useState([]);
+  const [jobs, setJobs] = useState([]);
   const [uploaderName, setUploaderName] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -14,14 +15,14 @@ export default function Home() {
   // Download preprocessed image file
   const downloadFile = (file, filename) => {
     const url = URL.createObjectURL(file);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
     link.download = filename || file.name;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-  }
+  };
 
   // Download all preprocessed image file
   const downloadAllPreprocessed = () => {
@@ -29,9 +30,55 @@ export default function Home() {
       setTimeout(() => {
         const filename = `preprocessed_${file.name}`;
         downloadFile(file, filename);
-      }, index * 100) // Small delay between downloads to avoid browser blocking
-    })
-  }
+      }, index * 100); // Small delay between downloads to avoid browser blocking
+    });
+  };
+
+  const fetchJobs = async () => {
+    try {
+      const response = await fetch("/api/db/jobs", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const jobsData = await response.json();
+      setJobs(jobsData);
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+    }
+  };
+
+  // Load jobs on component mount
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  // Refresh jobs after successful upload
+  useEffect(() => {
+    if (result?.success) {
+      // Refresh jobs immediately after upload
+      fetchJobs();
+
+      // Then poll for updates every 5 seconds for the next 2 minutes
+      const pollInterval = setInterval(() => {
+        fetchJobs();
+      }, 5000);
+
+      // Stop polling after 2 minutes
+      const stopPolling = setTimeout(() => {
+        clearInterval(pollInterval);
+      }, 120000);
+
+      return () => {
+        clearInterval(pollInterval);
+        clearTimeout(stopPolling);
+      };
+    }
+  }, [result]);
 
   const handlePreprocess = async () => {
     if (!files.length) return;
@@ -348,7 +395,9 @@ export default function Home() {
                         className="w-full h-32 object-contain bg-gray-50 rounded"
                       />
                       <button
-                        onClick={() => downloadFile(file, `preprocessed_${file.name}`)}
+                        onClick={() =>
+                          downloadFile(file, `preprocessed_${file.name}`)
+                        }
                         className="mt-2 w-full bg-gray-500 hover:bg-gray-600 text-white text-xs py-1 px-2 rounded transition"
                       >
                         Download
@@ -381,6 +430,177 @@ export default function Home() {
             </pre>
           </div>
         )}
+
+        <div className="mt-8">
+          <h2 className="text-2xl font-semibold mb-4 text-red-600">Jobs</h2>
+          {jobs.length > 0 ? (
+            <div className="space-y-4">
+              {jobs.map((jobData, index) => {
+                const job = jobData.job;
+                const status = job?.status || "unknown";
+
+                const getStatusColor = (status) => {
+                  switch (status) {
+                    case "processing":
+                      return "bg-yellow-100 text-yellow-800 border-yellow-200";
+                    case "completed":
+                      return "bg-green-100 text-green-800 border-green-200";
+                    case "failed":
+                      return "bg-red-100 text-red-800 border-red-200";
+                    default:
+                      return "bg-gray-100 text-gray-800 border-gray-200";
+                  }
+                };
+
+                const getStatusIcon = (status) => {
+                  switch (status) {
+                    case "processing":
+                      return (
+                        <svg
+                          className="animate-spin h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v8z"
+                          ></path>
+                        </svg>
+                      );
+                    case "completed":
+                      return (
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      );
+                    case "failed":
+                      return (
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      );
+                    default:
+                      return (
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                      );
+                  }
+                };
+
+                return (
+                  <div
+                    key={job?.jobId || index}
+                    className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-lg font-medium text-gray-700">
+                        Job: {job?.jobId?.slice(0, 8)}...
+                      </h3>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
+                          status
+                        )}`}
+                      >
+                        {getStatusIcon(status)}
+                        <span className="ml-1 capitalize">{status}</span>
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 mb-3">
+                      <div>
+                        <span className="font-medium">Batch ID:</span>{" "}
+                        {job?.batchId || "N/A"}
+                      </div>
+                      <div>
+                        <span className="font-medium">Files:</span>{" "}
+                        {job?.files?.length || 0}
+                      </div>
+                      <div>
+                        <span className="font-medium">Uploader:</span>{" "}
+                        {job?.metadata?.uploaderName || "N/A"}
+                      </div>
+                      <div>
+                        <span className="font-medium">Created:</span>{" "}
+                        {job?.createdAt
+                          ? new Date(job.createdAt).toLocaleString()
+                          : "N/A"}
+                      </div>
+                    </div>
+
+                    {job?.files && job.files.length > 0 && (
+                      <div className="mb-3">
+                        <span className="font-medium text-sm text-gray-700">
+                          Files:
+                        </span>
+                        <div className="mt-1 space-y-1">
+                          {job.files.map((file, fileIndex) => (
+                            <div
+                              key={fileIndex}
+                              className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded"
+                            >
+                              {file.originalName}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <details className="text-xs">
+                      <summary className="cursor-pointer text-gray-500 hover:text-gray-700">
+                        View full job data
+                      </summary>
+                      <pre className="mt-2 text-xs text-gray-600 overflow-x-auto bg-gray-50 p-2 rounded">
+                        {JSON.stringify(job, null, 2)}
+                      </pre>
+                    </details>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-gray-500">No jobs found.</p>
+          )}
+        </div>
       </div>
     </div>
   );

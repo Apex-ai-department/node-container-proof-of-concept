@@ -6,6 +6,7 @@ import {
 } from "../controllers/db_controller/AIResultsController.js";
 import {
   getJob,
+  getAllJobs,
   updateJob,
 } from "../controllers/db_controller/jobController.js";
 import { pool } from "../config/postgres.js";
