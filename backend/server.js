@@ -3,7 +3,12 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { createServer } from "http";
 import { specs, swaggerUi } from "./swagger.js";
-import { Redis } from "@upstash/redis";
+import { redis } from "./config/redis.js";
+import { pool } from "./config/postgres.js";
+import uploadRoutes from "./routes/upload.js";
+import invoiceRoutes from "./routes/invoices.js";
+import resultsRoutes from "./routes/db.js";
+import queueRoutes from "./routes/queue.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -11,15 +16,16 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 const server = createServer(app);
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_URL,
-  token: process.env.UPSTASH_REDIS_TOKEN,
-});
-
 // Middleware
 app.use(cors()); // Enable cross-origin resource sharing
 app.use(express.json()); // Automatically parse incoming JSON request bodies
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs)); // Set up api endpoint for swagger ui
+
+// Routes
+app.use("/api/upload", uploadRoutes);
+app.use("/api/invoices", invoiceRoutes);
+app.use("/api/db", resultsRoutes);
+app.use('/api/queue', queueRoutes);
 
 /**
  * @swagger
@@ -43,13 +49,26 @@ app.get("/", (req, res) => {
 const startServer = async () => {
   // Test redis connection
   try {
-    await redis.set('connection_test', 'Redis connection successful!');
-    const testValue = await redis.get('connection_test');
+    await redis.set("connection_test", "Redis connection successful!");
+    const testValue = await redis.get("connection_test");
     console.log(testValue);
   } catch (error) {
-    console.error('Redis connection failed');
+    console.error("Redis connection failed");
   }
-  
+
+  // Test database connection
+  try {
+    const client = await pool.connect();
+    const result = await client.query("SELECT NOW()");
+    console.log("Postgre Database connection successful!", result.rows[0]);
+    client.release();
+  } catch (error) {
+    console.error("Postgre Database connection failed:", error.message);
+    console.log(
+      "Note: Make sure Docker is running and PostgreSQL container is started"
+    );
+  }
+
   server.listen(PORT, () => {
     console.log(`Server started at http://localhost:${PORT}`);
   });

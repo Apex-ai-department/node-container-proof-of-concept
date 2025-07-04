@@ -1,0 +1,18 @@
+1. 
+INSERT INTO jobs (job_id, job_data)
+VALUES (
+  'd1f3aabb-1234-5678-9abc-def012345678',
+  '{"jobId":"d1f3aabb-1234-5678-9abc-def012345678","uploaderName":"Test User"}'::jsonb
+);
+
+
+2.
+INSERT INTO ai_results (job_id, company_name, price, date, uploader_name, raw_ocr)
+VALUES (
+  'd1f3aabb-1234-5678-9abc-def012345678',
+  'Sample Company',
+  1234.56,
+  '2025-07-01',
+  'Test User',
+  'Fake OCR text for testing'
+);
